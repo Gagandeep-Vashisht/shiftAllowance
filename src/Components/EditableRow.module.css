@@ -1,0 +1,6 @@
+input {
+  font-size: 10pt;
+}
+input[type='number']{
+  width: 70px;
+} 

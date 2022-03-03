@@ -1,0 +1,6 @@
+// class Allowance{
+
+//     constructor({
+//         // project
+//     });
+// }

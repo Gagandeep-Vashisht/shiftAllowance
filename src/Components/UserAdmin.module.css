@@ -1,0 +1,95 @@
+.confirmButton {
+  background-color: #0078d0;
+  border: 0;
+  border-radius: 56px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: system-ui, -apple-system, system-ui, "Segoe UI", Roboto, Ubuntu,
+    "Helvetica Neue", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  outline: 0;
+  padding: 16px 21px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.confirmButton:before {
+  background-color: initial;
+  background-image: linear-gradient(#fff 0, rgba(255, 255, 255, 0) 100%);
+  border-radius: 125px;
+  content: "";
+  height: 50%;
+  left: 4%;
+  opacity: 0.5;
+  position: absolute;
+  top: 0;
+  transition: all 0.3s;
+  width: 92%;
+}
+.confirmButton button[disabled="disabled"]:hover {
+  background-color: rgb(212, 208, 200);
+  color: rgb(128, 128, 128);
+}
+.confirmButton[disabled]:hover {
+  background-color: red;
+}
+.confirmButton:hover {
+  background: lime;
+}
+/* .confirmButton:active:hover {
+  box-shadow: rgba(255, 255, 255, 0.2) 0 3px 15px inset,
+    rgba(0, 0, 0, 0.1) 0 3px 5px, rgba(0, 0, 0, 0.1) 0 10px 13px;
+  transform: scale(1.05);
+} */
+
+@media (min-width: 768px) {
+  .confirmButton {
+    padding: 16px 48px;
+  }
+}
+
+.mar {
+  width: 90%;
+  justify-content: center;
+  text-align: center;
+  margin: auto;
+  margin-top: 10px;
+}
+.txt {
+  height: 39px;
+  font-size: 30px;
+  margin: 10px;
+}
+.actions {
+  display: flex;
+  padding: 1rem;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.addButton {
+  justify-content: center;
+
+  padding: 1rem;
+
+  gap: 1rem;
+  font: inherit;
+  background-color: cyan;
+  cursor: pointer;
+
+  border: none;
+  border-radius: 25px;
+  padding: 0.5rem 2rem;
+}
+
+.addButton:hover,
+.addButton:active {
+  background-color: cornflowerblue;
+}
