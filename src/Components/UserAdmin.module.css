@@ -93,3 +93,7 @@
 .addButton:active {
   background-color: cornflowerblue;
 }
+.paginationbtn{
+  text-align: right;
+  margin: 10px;
+}

@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import UserContext from "../store/UserContext";
 import classes from "./UserAdmin.module.css";
-import {FaTrashAlt} from "react-icons/fa"
+import { FaTrashAlt } from "react-icons/fa";
 import Modal from "../UI/Modal";
 import AddUser from "./AddUser";
 import User from "../model/User";
@@ -11,6 +11,9 @@ import { fetchToken } from "../util/storage";
 
 const UserAdmin = () => {
   const userContext = useContext(UserContext);
+  const [curPage, setCurPage] = useState(0);
+  const [leftDisabled, setLeftDisabled] = useState(true);
+  const [rightDisabled, setRightDisabled] = useState(true);
 
   const [portalOpened, openPortal] = useState(false);
   const [counter, setCounter] = useState(0);
@@ -18,6 +21,7 @@ const UserAdmin = () => {
   const [order, setOrder] = useState("ASC");
   const [sortKey, setSortKey] = useState();
   const [showDialog, setDialog] = useState(false);
+  const [totalPage,setTotalPage]=useState(0);
   // const [loaded,setLoaded]=useState(false);
   var data = userContext.users;
 
@@ -96,38 +100,47 @@ const UserAdmin = () => {
     openPortal(false);
   };
 
-  const sorting = (col,type) => {
+  const sorting = (col, type) => {
     setSortKey(col);
-    if(type==='string'){
-    if (order === "ASC") {
-      const sorted = [...data].sort((a, b) => (a[col].toLowerCase() < b[col].toLowerCase() ? 1 : -1));
-      userContext.users = sorted;
-      setOrder("DSC");
+    if (type === "string") {
+      if (order === "ASC") {
+        const sorted = [...data].sort((a, b) =>
+          a[col].toLowerCase() < b[col].toLowerCase() ? 1 : -1
+        );
+        userContext.users = sorted;
+        setOrder("DSC");
+      }
+      if (order === "DSC") {
+        const sorted = [...data].sort((a, b) =>
+          a[col].toLowerCase() > b[col].toLowerCase() ? 1 : -1
+        );
+        userContext.users = sorted;
+        setOrder("ASC");
+      }
     }
-    if (order === "DSC") {
-      const sorted = [...data].sort((a, b) => (a[col].toLowerCase() > b[col].toLowerCase() ? 1 : -1));
-      userContext.users = sorted;
-      setOrder("ASC");
+    if (type === "number") {
+      if (order === "ASC") {
+        const sorted = [...data].sort((a, b) =>
+          parseInt(a[col]) < parseInt(b[col]) ? 1 : -1
+        );
+        userContext.users = sorted;
+        setOrder("DSC");
+      }
+      if (order === "DSC") {
+        const sorted = [...data].sort((a, b) =>
+          parseInt(a[col]) > parseInt(b[col]) ? 1 : -1
+        );
+        userContext.users = sorted;
+        setOrder("ASC");
+      }
     }
-  }
-  if(type==='number'){
-    if (order === "ASC") {
-      const sorted = [...data].sort((a, b) => (parseInt(a[col]) < parseInt(b[col]) ? 1 : -1));
-      userContext.users = sorted;
-      setOrder("DSC");
-    }
-    if (order === "DSC") {
-      const sorted = [...data].sort((a, b) => (parseInt(a[col]) > parseInt(b[col]) ? 1 : -1));
-      userContext.users = sorted;
-      setOrder("ASC");
-    }
-  }
     console.log(order, sortKey);
   };
   // var changeData = [];
   useEffect(() => {
     console.log("use effect");
     console.log(changeData);
+    // setCurPage(0);
     // setLoaded(false);
     fetchAllUser();
   }, []);
@@ -145,13 +158,17 @@ const UserAdmin = () => {
     };
 
     const res = await fetch(
-      `${process.env.REACT_APP_ENDPOINT}/userapi/getall`,
+      `${process.env.REACT_APP_ENDPOINT}/userapi/get/${curPage}/10/name/asc`,
       requestOptions
     );
     const jsonData = await res.json();
+  
     console.log(jsonData);
+    setLeftDisabled(jsonData.first);
+    setRightDisabled(jsonData.right);
+    setTotalPage(jsonData.totalPages-1);
     var tempData = [];
-    tempData = jsonData.map((e, i) => {
+    tempData = jsonData.content.map((e, i) => {
       return {
         userId: `${i + 1}`,
         name: e.name,
@@ -229,158 +246,192 @@ const UserAdmin = () => {
 
     return true;
   };
-  const onDelete=async (data)=>{
-    const body=data.email;
-    const token=fetchToken();
+  const onDelete = async (data) => {
+    const body = data.email;
+    const token = fetchToken();
     const requestOptions = {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json', "Authorization":`Bearer ${token}` },
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       // body:JSON.stringify(body)
-    
-    
-  };
-  userContext.deleteUser(data);
+    };
+    userContext.deleteUser(data);
 
-  console.log(`${process.env.REACT_APP_ENDPOINT}/userapi/deleteuser/${data.email}`);
-    const res=[];
-    try{
-     res=await fetch(`${process.env.REACT_APP_ENDPOINT}/userapi/deleteuser/${data.email}`,requestOptions);
-    }catch(e){
+    console.log(
+      `${process.env.REACT_APP_ENDPOINT}/userapi/deleteuser/${data.email}`
+    );
+    const res = [];
+    try {
+      res = await fetch(
+        `${process.env.REACT_APP_ENDPOINT}/userapi/deleteuser/${data.email}`,
+        requestOptions
+      );
+    } catch (e) {
       console.log(e);
     }
 
-    const jsonData=await res.json();
-    console.log("user deleted",jsonData);
+    const jsonData = await res.json();
+    console.log("user deleted", jsonData);
     // data=userContext.users;
-  }
+  };
   return (
     <div className={classes.mar}>
       <div className={classes.txt}>User Administration</div>
 
-      {
-        <div className={"table  table-responsive "}>
-          <table className="table table-light table-hover  ">
-            <thead>
-              <tr className="table-info">
-                <th
-                  onClick={() => {
-                    sorting("userId",'number');
-                  }}
-                >
-                  {" "}
-                  <div type="button">
-                    User Id{" "}
-                    {"userId" === sortKey ? (
-                      "ASC" === order ? (
-                        <AiFillCaretUp />
-                      ) : (
-                        <AiFillCaretDown></AiFillCaretDown>
-                      )
-                    ) : (
+      <div className={"table  table-responsive "}>
+        <table className="table table-light table-hover  ">
+          <thead>
+            <tr className="table-info">
+              <th
+                onClick={() => {
+                  sorting("userId", "number");
+                }}
+              >
+                {" "}
+                <div type="button">
+                  User Id{" "}
+                  {"userId" === sortKey ? (
+                    "ASC" === order ? (
                       <AiFillCaretUp />
-                    )}
-                  </div>
-                </th>
-                <th
-                  onClick={() => {
-                    sorting("name",'string');
-                  }}
-                >
-                  <div type="button">
-                    Name{" "}
-                    {"name" === sortKey ? (
-                      "ASC" === order ? (
-                        <AiFillCaretUp />
-                      ) : (
-                        <AiFillCaretDown></AiFillCaretDown>
-                      )
                     ) : (
+                      <AiFillCaretDown></AiFillCaretDown>
+                    )
+                  ) : (
+                    <AiFillCaretUp />
+                  )}
+                </div>
+              </th>
+              <th
+                onClick={() => {
+                  sorting("name", "string");
+                }}
+              >
+                <div type="button">
+                  Name{" "}
+                  {"name" === sortKey ? (
+                    "ASC" === order ? (
                       <AiFillCaretUp />
-                    )}
-                  </div>
-                </th>
-                <th> Active From </th>
-                <th> Role </th>
-                <th> Status</th>
-                <th> </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((element) => (
-                <tr className="table-success">
-                  <td> {element.userId} </td>
-                  <td> {element.name} </td>
-                  <td> {element.activeFrom}</td>
-                  <td>
-                    {
-                      <select
-                        id="role"
-                        name="role"
-                        onChange={(e) => roleChange(e, element)}
-                        key={element.userId}
-                      >
-                        <option selected hidden>
-                          {element.role}
-                        </option>
-
-                        <option value="LEAD">LEAD</option>
-                        <option value="DEVELOPER">DEVELOPER</option>
-                        <option value="ADMIN">ADMIN</option>
-                      </select>
-                    }
-                  </td>
-                  
-                  <td>
-                    {
-                      <select
-                        id="status"
-                        key={element.userId}
-                        name="status"
-                        onChange={(e) => statusChange(e, element)}
-                      >
-                        <option selected disabled hidden value={element.status}>
-                          {element.status}
-                        </option>
-                        {/* <option value="Requested">Requested</option> */}
-
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                      </select>
-                    }
-                  </td>
+                    ) : (
+                      <AiFillCaretDown></AiFillCaretDown>
+                    )
+                  ) : (
+                    <AiFillCaretUp />
+                  )}
+                </div>
+              </th>
+              <th> Active From </th>
+              <th> Role </th>
+              <th> Status</th>
+              <th> </th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((element) => (
+              <tr className="table-success">
+                <td> {element.userId} </td>
+                <td> {element.name} </td>
+                <td> {element.activeFrom}</td>
+                <td>
                   {
-                    <td>
-                      <button
-                        onClick={() => {
-                          onConfirm(element);
-                        }}
-                        disabled={
-                          element.status === "Requested"
-                            ? false
-                            : checkConfirm(element)
-                        }
-                        className={
-                          element.status === "Requested"
-                            ? "btn btn-success btn-sm"
-                            : !checkConfirm(element)
-                            ? "btn btn-success btn-sm"
-                            : "btn btn-sm"
-                        }
-                      >
-                        Confirm
-                      </button>
-                      <span type='button' onClick={()=>onDelete(element)}>
-                        <FaTrashAlt style={{color:"red"}} className="mx-2"/>
-                      </span>
-                    </td>
+                    <select
+                      id="role"
+                      name="role"
+                      onChange={(e) => roleChange(e, element)}
+                      key={element.userId}
+                    >
+                      <option selected hidden>
+                        {element.role}
+                      </option>
+
+                      <option value="LEAD">LEAD</option>
+                      <option value="DEVELOPER">DEVELOPER</option>
+                      <option value="ADMIN">ADMIN</option>
+                    </select>
                   }
-                    
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      }
+                </td>
+
+                <td>
+                  {
+                    <select
+                      id="status"
+                      key={element.userId}
+                      name="status"
+                      onChange={(e) => statusChange(e, element)}
+                    >
+                      <option selected disabled hidden value={element.status}>
+                        {element.status}
+                      </option>
+                      {/* <option value="Requested">Requested</option> */}
+
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                  }
+                </td>
+                {
+                  <td>
+                    <button
+                      onClick={() => {
+                        onConfirm(element);
+                      }}
+                      disabled={
+                        element.status === "Requested"
+                          ? false
+                          : checkConfirm(element)
+                      }
+                      className={
+                        element.status === "Requested"
+                          ? "btn btn-success btn-sm"
+                          : !checkConfirm(element)
+                          ? "btn btn-success btn-sm"
+                          : "btn btn-sm"
+                      }
+                    >
+                      Confirm
+                    </button>
+                    <span type="button" onClick={() => onDelete(element)}>
+                      <FaTrashAlt style={{ color: "red" }} className="mx-2" />
+                    </span>
+                  </td>
+                }
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className={`${classes.paginationbtn}`}>
+        <button
+          className="btn btn-info btn-sm"
+          style={{borderRadius:8}}
+
+          disabled={curPage==0 || leftDisabled}
+          onClick={() => {
+           
+          
+            setCurPage(curPage - 1);
+            fetchAllUser();
+
+          }}
+        >
+          {"<"}
+        </button>
+        <input className="mx-2 input" value={curPage} disabled style={{width:25, borderRadius:8, textAlign:"center"}} />
+        <button
+          className="btn btn-info btn-sm"
+          disabled={curPage==totalPage||rightDisabled}
+          style={{borderRadius:8}}
+          onClick={() => {
+           
+            setCurPage(curPage + 1);
+            fetchAllUser();
+          }}
+        >
+          {">"}
+        </button>
+      </div>
+
       {portalOpened && (
         <Modal onClose={onClose}>
           <AddUser onClose={onClose}></AddUser>
@@ -389,7 +440,6 @@ const UserAdmin = () => {
       <button className={classes.addButton} onClick={onSubmit}>
         Add
       </button>
-      
     </div>
   );
 };

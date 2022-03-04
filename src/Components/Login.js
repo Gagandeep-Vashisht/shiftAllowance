@@ -142,7 +142,7 @@ const Login = (props) => {
                   </div>
                   <p>
                     New user?
-                    <Link to="/signup">Request Access</Link>
+                    <Link to="/signup" style={{textDecoration:"none"}}>Request Access</Link>
                   </p>
   <div className="incedo-logo" style={{"display":"flex","justifyContent":"center","marginTop":"20px"}}>   <div style={{"marginTop":"15px", fontSize:"11px"}}> <p>Powered by</p></div> <img src={incedologo} width="100" alt="" /></div>
                 </div>

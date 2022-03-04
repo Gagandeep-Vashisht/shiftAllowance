@@ -20,6 +20,11 @@ const DashBoard = () => {
   var [dateSelected, setDateSelected] = useState(false);
   var [projectSelected, setProjectSelected] = useState(null);
   var [perDayAllowance, setPerDayAllowance] = useState(150);
+  const [curPage, setCurPage] = useState(0);
+  const [leftDisabled, setLeftDisabled] = useState(true);
+  const [rightDisabled, setRightDisabled] = useState(true);
+  const [totalPage, setTotalPage] = useState(0);
+
   // var startDate=new Date(),endDate=new Date();
   const [editData, setEditData] = useState({
     id: "",
@@ -269,14 +274,17 @@ const DashBoard = () => {
         process.env.REACT_APP_ENDPOINT
       }/allowance/getprojects/${projectSelected}/${formatDate(
         startDate
-      )}/${formatDate(endDate)}`,
+      )}/${formatDate(endDate)}/${curPage}/10/name/asc`,
       requestOptions
     );
     const jsonData = await res.json();
     console.log(jsonData);
 
     setSortData([]);
-    data = jsonData.map((data, i) => ({
+    setLeftDisabled(jsonData.first);
+    setRightDisabled(jsonData.right);
+    setTotalPage(jsonData.totalPages - 1);
+    data = jsonData.content.map((data, i) => ({
       id: data.id,
       name: data.name,
       sapId: data.sapid,
@@ -333,11 +341,11 @@ const DashBoard = () => {
     console.log("after put call");
     console.log("printing res", res);
   };
-  const onApplyToAll=()=>{
-    var updatedData=[];
+  const onApplyToAll = () => {
+    var updatedData = [];
     console.log(sortData);
-    updatedData=sortData.map((e,i)=>({
-      id:e.id,
+    updatedData = sortData.map((e, i) => ({
+      id: e.id,
       name: e.name,
       sapId: e.sapId,
       projectHours: e.projectHours,
@@ -345,11 +353,13 @@ const DashBoard = () => {
       afternoonShift: e.afternoonShift,
       nightShift: e.nightShift,
       daysTa: e.daysTa,
-      transportAllowance:  parseInt(e.daysTa) * perDayAllowance,
-      totalAllowance: parseInt(e.daysTa) * perDayAllowance +parseInt(e.nightShift) * 2 * perDayAllowance,
+      transportAllowance: parseInt(e.daysTa) * perDayAllowance,
+      totalAllowance:
+        parseInt(e.daysTa) * perDayAllowance +
+        parseInt(e.nightShift) * 2 * perDayAllowance,
     }));
     setSortData(updatedData);
-  }
+  };
   return (
     <div>
       <div className={classes.txt}>Allowance DashBoard</div>
@@ -407,7 +417,13 @@ const DashBoard = () => {
             <div className="text-center mx-5">
               <label></label>
               <div>
-                <button className=" btn btn-primary" onClick={fetchDetail}>
+                <button
+                  className=" btn btn-primary"
+                  onClick={() => {
+                    setCurPage(0);
+                    fetchDetail();
+                  }}
+                >
                   Filter
                 </button>
               </div>
@@ -430,7 +446,9 @@ const DashBoard = () => {
           <div className="mx-3">
             <label></label>
             <div>
-              <button className="btn btn-primary" onClick={onApplyToAll}>Apply to all</button>
+              <button className="btn btn-primary" onClick={onApplyToAll}>
+                Apply to all
+              </button>
             </div>
           </div>
         </div>
@@ -532,7 +550,36 @@ const DashBoard = () => {
             ))}
           </table>
         </form>
-
+        <div className={`${classes.paginationbtn}`}>
+          <button
+            className="btn btn-info btn-sm"
+            style={{ borderRadius: 8 }}
+            disabled={curPage == 0 || leftDisabled}
+            onClick={() => {
+              setCurPage(curPage - 1);
+              fetchDetail();
+            }}
+          >
+            {"<"}
+          </button>
+          <input
+            className="mx-2 input"
+            value={curPage}
+            disabled
+            style={{ width: 25, borderRadius: 8, textAlign: "center" }}
+          />
+          <button
+            className="btn btn-info btn-sm"
+            disabled={curPage == totalPage || rightDisabled}
+            style={{ borderRadius: 8 }}
+            onClick={() => {
+              setCurPage(curPage + 1);
+              fetchDetail();
+            }}
+          >
+            {">"}
+          </button>
+        </div>
         <CSVLink {...csvReport}>
           <button className={classes.addButton} onClick={Approve}>
             Approve and Download

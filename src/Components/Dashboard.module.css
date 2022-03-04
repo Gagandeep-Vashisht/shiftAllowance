@@ -123,3 +123,7 @@
   width: 180px;
   height: 21px;
 }
+.paginationbtn{
+  text-align: right;
+  margin: 10px;
+}
