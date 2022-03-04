@@ -11,10 +11,11 @@ import HomeScreen from "./Components/HomeScreen";
 export default function App() {
   return (
     <Router>
-      < meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"></meta>
       <UserProvider>
         <LoginProvider>
           <SignupProvider>
+      
+
             <Routes>
               
               <Route path="/" element={<Home />} exact />
