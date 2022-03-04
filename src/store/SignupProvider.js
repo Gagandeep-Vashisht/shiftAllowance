@@ -19,9 +19,12 @@ export default function SignupProvider(props) {
       body: JSON.stringify(user)
   };
     const res=await fetch(`${process.env.REACT_APP_ENDPOINT}/userapi/user`,requestOptions);
-    const jsonData=await res.json();
-    console.log("user request sent");
-
+    // const jsonData=await res.json();
+    console.log("user request sent",res.message);
+    
+    
+    // props.setMessage(jsonData);
+    // props.setShowMessage(true);
   };
   
   function formatDate(date) {

@@ -16,6 +16,8 @@ function isValidEmail(email) {
 const Signup = (props) => {
   const navigate = useNavigate();
   const [showModal, setModal] = useState(false);
+  const [message,setMessage]=useState("");
+  const [showMessage,setShowMessage]=useState(false);
   const context = useContext(SignupContext);
   const [formInputsValidity, setFormInputsValidity] = useState({
     email: true,
@@ -69,9 +71,11 @@ const Signup = (props) => {
       pass: enteredPass,
       role: enteredRole,
       name: enteredName,
+      setShowMessage:setShowMessage,
+      setMessage:setMessage
     });
     setModal(true);
-
+    // showMessage(true);
     emailInputRef.current.value = "";
     passInputRef.current.value = "";
     nameInputRef.current.value = "";
@@ -110,7 +114,11 @@ const Signup = (props) => {
                 >
                   <div className="card-body p-4 text-center">
                     <h3 className="mb-4">REQUEST</h3>
-
+                    {showMessage&&<div class="alert alert-danger" role="alert">
+                      <label style={{fontSize:13}}>
+                          {message}
+                      </label>
+                    </div>}
                     <div className="form-outline mb-9">
                       <div className={emailControlClasses}>
                         <label className="form-label" htmlFor="email">

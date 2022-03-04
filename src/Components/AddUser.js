@@ -101,6 +101,7 @@ const AddUser = (props) => {
     passInputRef.current.value = "";
     nameInputRef.current.value="";
     roleInputRef.current.value = "none";
+    
     props.onClose();
   };
 

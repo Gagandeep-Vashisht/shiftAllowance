@@ -12,7 +12,7 @@ const DashBoard = () => {
   // const userContext = useContext(UserContext);
   const [selectedDate, setDate] = useState(new Date());
   const [order, setOrder] = useState("ASC");
-  const [sortKey, setSortKey] = useState("sapId");
+  const [sortKey, setSortKey] = useState("name");
   const [rowId, setRowId] = useState(-1);
   var [projects, setProject] = useState([]);
   var [startDate, setStartDate] = useState(new Date());
@@ -20,10 +20,10 @@ const DashBoard = () => {
   var [dateSelected, setDateSelected] = useState(false);
   var [projectSelected, setProjectSelected] = useState(null);
   var [perDayAllowance, setPerDayAllowance] = useState(150);
-  const [curPage, setCurPage] = useState(0);
+  const [curPage, setCurPage] = useState(1);
   const [leftDisabled, setLeftDisabled] = useState(true);
   const [rightDisabled, setRightDisabled] = useState(true);
-  const [totalPage, setTotalPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
 
   // var startDate=new Date(),endDate=new Date();
   const [editData, setEditData] = useState({
@@ -283,7 +283,7 @@ const DashBoard = () => {
     setSortData([]);
     setLeftDisabled(jsonData.first);
     setRightDisabled(jsonData.right);
-    setTotalPage(jsonData.totalPages - 1);
+    setTotalPage(jsonData.totalPages );
     data = jsonData.content.map((data, i) => ({
       id: data.id,
       name: data.name,
@@ -420,7 +420,8 @@ const DashBoard = () => {
                 <button
                   className=" btn btn-primary"
                   onClick={() => {
-                    setCurPage(0);
+                    setCurPage(1);
+                    setTotalPage(1);
                     fetchDetail();
                   }}
                 >
@@ -554,9 +555,10 @@ const DashBoard = () => {
           <button
             className="btn btn-info btn-sm"
             style={{ borderRadius: 8 }}
-            disabled={curPage == 0 || leftDisabled}
+            disabled={curPage == 1 || leftDisabled}
             onClick={() => {
-              setCurPage(curPage - 1);
+              const page=curPage - 1
+              setCurPage(page);
               fetchDetail();
             }}
           >
@@ -564,16 +566,18 @@ const DashBoard = () => {
           </button>
           <input
             className="mx-2 input"
-            value={curPage}
+            value={`${curPage}/${totalPage}`}
             disabled
-            style={{ width: 25, borderRadius: 8, textAlign: "center" }}
+            style={{ width: 40, borderRadius: 8, textAlign: "center" }}
           />
           <button
             className="btn btn-info btn-sm"
             disabled={curPage == totalPage || rightDisabled}
             style={{ borderRadius: 8 }}
             onClick={() => {
-              setCurPage(curPage + 1);
+              const page=curPage + 1
+
+              setCurPage(page);
               fetchDetail();
             }}
           >

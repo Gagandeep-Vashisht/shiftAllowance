@@ -417,9 +417,11 @@ const UserAdmin = () => {
         >
           {"<"}
         </button>
-        <input className="mx-2 input" value={curPage} disabled style={{width:25, borderRadius:8, textAlign:"center"}} />
+        <input className="mx-2 input" value={`${curPage}/${totalPage}`} disabled style={{width:40, borderRadius:8, textAlign:"center"}} />
+        {/* <input className="mr-2 input" value={totalPage} disabled style={{width:25, borderRadius:8, textAlign:"center"}} /> */}
+        
         <button
-          className="btn btn-info btn-sm"
+          className={"btn btn-info btn-sm"}
           disabled={curPage==totalPage||rightDisabled}
           style={{borderRadius:8}}
           onClick={() => {
