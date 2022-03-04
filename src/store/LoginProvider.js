@@ -20,17 +20,24 @@ export default function LoginProvider(props)  {
   const res= await fetch(`${process.env.REACT_APP_ENDPOINT}/authenticate`, requestOptions)
     const jsonData=await res.json();
     console.log("Inside login provider ");
-    console.log(jsonData.token);
+    if(jsonData.message==='INVALID_CREDENTIALS'){
+      data.setMessage("Invalid Email or Password.");
+      data.setShowMessage(true);
+      return;
+    }
     
-    console.log();
-    // if(data.role==="ADMIN")
+    console.log(jsonData);
     
     saveToken(jsonData.token);
     const userData=await userDetails(jsonData.token);
-   
+    console.log(userData);
+    if(userData.status==="Requested"){
+      data.setMessage("Your status is Requested,Please wait for the Admin to Accept your request.");
+      data.setShowMessage(true);
+      return;
+    }
     navigate("/home");
     
-
   };
   return (
     <LoginContext.Provider value={loginMethod}>

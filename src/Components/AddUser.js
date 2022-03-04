@@ -172,6 +172,7 @@ const AddUser = (props) => {
           </label>
           <input
             id="pass"
+            style={{fontWeight:"bold"}}
             ref={passInputRef}
             type="password"
             className="form-control"

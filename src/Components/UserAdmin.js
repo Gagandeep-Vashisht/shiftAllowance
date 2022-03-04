@@ -329,7 +329,7 @@ const UserAdmin = () => {
                       </select>
                     }
                   </td>
-                  {/* <td> {element.role} </td> */}
+                  
                   <td>
                     {
                       <select

@@ -1,5 +1,7 @@
 import { useContext, useRef, useState } from "react";
-import Card from "../UI/Card.js";
+// import Card from "../UI/Card.js";
+import incedologo from '../util/incedo-logo.png'
+
 import classes from "./Login.module.css";
 import Request from "./Request.js";
 import { Link , useNavigate} from "react-router-dom";
@@ -123,7 +125,7 @@ const Signup = (props) => {
          
               <div className={passControlClasses}>
       <label htmlFor="pass" className="form-label">Password</label>
-      <input className=" form-control-lg" style={{fontSize:10,fontFamily:'bold'}} type="password" id="pass" ref={passInputRef} />
+      <input className=" form-control-lg" style={{fontFamily:'bold'}} type="password" id="pass" ref={passInputRef} />
       {!formInputsValidity.pass && <p>Please enter a valid pass!</p>}
 
 
@@ -150,6 +152,8 @@ const Signup = (props) => {
     Already a user?
     <Link to="/" >LOGIN</Link>
   </p>
+  <div className="incedo-logo" style={{"display":"flex","justifyContent":"center","marginTop":"20px"}}>   <div style={{"marginTop":"15px", fontSize:"11px"}}> <p>Powered by</p></div> <img src={incedologo} width="100" alt="" /></div>
+
         </div>
       </div>
     </div>
