@@ -15,7 +15,7 @@ pipeline {
         }
        stage('Completed') {
             steps {
-                sh "echo 'Completed added webhook'"
+                sh "echo 'Completed added webhook.'"
             }
         }
         
